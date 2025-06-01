@@ -25,7 +25,8 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'supersecretkey')
 # Enable CORS for React frontend
 from flask_cors import CORS
 
-CORS(app, supports_credentials=True, origins=['http://localhost:3000'])
+CORS(app, supports_credentials=True, origins="*")
+
 
 app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',  # or 'None' with secure=True if using https
