@@ -2,6 +2,14 @@ import os
 import json
 from flask_mysqldb import MySQL
 from flask import Flask, request, jsonify, session
+from flask import send_from_directory, send_file, request
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+import pandas as pd
 from flask_cors import CORS
 import openai
 from utils import (
@@ -256,6 +264,67 @@ def upload_bulk_resumes():
 
 
 
+@app.route('/uploads/<path:filename>')
+def download_resume(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
+
+@app.route('/download_report', methods=['POST'])
+def download_report():
+    data = request.get_json()
+    results = data.get('results', [])
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Title
+    elements.append(Paragraph("Resume Screening Report", styles['Title']))
+    elements.append(Spacer(1, 12))
+
+    # Table data
+    table_data = [["Resume", "Match Score (%)"]]
+    for res in results:
+        table_data.append([res['filename'], f"{res['match_score']}"])
+
+    # Create table
+    t = Table(table_data, hAlign='LEFT')
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightblue),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0,0), (-1,0), 12),
+        ('BACKGROUND', (0,1), (-1,-1), colors.beige),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+    ]))
+    elements.append(t)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name="resume_report.pdf", mimetype='application/pdf')
+
+
+
+@app.route('/download_report_excel', methods=['POST'])
+def download_report_excel():
+    data = request.get_json()
+    results = data.get('results', [])
+
+    rows = []
+    for res in results:
+        rows.append({
+            "Resume": res['filename'],
+            "Match Score (%)": res['match_score'],
+        })
+
+    df = pd.DataFrame(rows)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Summary')
+    output.seek(0)
+    return send_file(output, as_attachment=True, download_name="resume_report.xlsx", mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 
