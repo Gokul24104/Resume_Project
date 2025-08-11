@@ -7,7 +7,7 @@ export default function Home() {
       <section
         className="d-flex flex-column justify-content-center align-items-center text-center text-white"
         style={{
-          height: '75vh',
+          height: '50vh',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           padding: '0 1rem',
         }}

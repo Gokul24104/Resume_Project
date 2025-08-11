@@ -1,0 +1,47 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    usertype ENUM('individual', 'company') NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE resumes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    file_name VARCHAR(255),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    resume_skills JSON;
+);
+
+CREATE TABLE job_descriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    filename VARCHAR(255),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    jd_skills JSON;
+);
+
+CREATE TABLE match_results (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    resume_id INT,
+    jd_id INT,
+    similarity_score FLOAT,
+    matched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE,
+    FOREIGN KEY (jd_id) REFERENCES job_descriptions(id) ON DELETE CASCADE
+);
+
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE users;
+TRUNCATE TABLE resumes;
+TRUNCATE TABLE job_descriptions;
+TRUNCATE TABLE match_results;
+-- Add other tables as needed
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+

@@ -1,3 +1,4 @@
+//ResumeUpload
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -91,6 +92,7 @@ function ResumeUpload() {
         <div className="container my-5" style={{ maxWidth: "850px" }}>
             <div className="text-center mb-5">
                 <h1 className="display-5 fw-bold">
+                    <FaRobot className="me-2 text-primary" />
                     AI Resume Screener
                 </h1>
                 <p className="lead text-muted">
