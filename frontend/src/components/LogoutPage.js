@@ -3,11 +3,13 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const BASE_URL = 'https://resume-project-i2f8.onrender.com'; // Your deployed backend URL
+
 function LogoutPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.post('http://localhost:5000/logout', {}, { withCredentials: true })
+    axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true })
       .then(() => {
         navigate('/');
       })

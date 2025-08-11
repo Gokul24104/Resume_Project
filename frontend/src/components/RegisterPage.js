@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
+const BASE_URL = 'https://resume-project-i2f8.onrender.com'; // Your deployed backend URL
+
 export default function Register() {
   const { usertype } = useParams();
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch(`${BASE_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -28,7 +30,6 @@ export default function Register() {
           username,
           password,
           usertype,
-          
         }),
         credentials: 'include'
       });
@@ -67,7 +68,7 @@ export default function Register() {
       >
         <i className="bi bi-arrow-left"></i>
       </button>
-      
+
       <div
         className="card shadow-lg p-4 p-md-5"
         style={{ maxWidth: '420px', borderRadius: '1rem', width: '100%' }}

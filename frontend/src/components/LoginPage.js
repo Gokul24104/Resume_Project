@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
+const BASE_URL = 'https://resume-project-i2f8.onrender.com';  // <-- Change this to your backend URL
+
 export default function Login() {
   const { usertype } = useParams();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); const handleSubmit = async (e) => {
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -22,7 +26,7 @@ export default function Login() {
 
       if (response.ok) {
         // 🔍 Immediately verify session
-        const sessionCheck = await fetch('http://localhost:5000/api/check_session', {
+        const sessionCheck = await fetch(`${BASE_URL}/api/check_session`, {
           method: 'GET',
           credentials: 'include'
         });

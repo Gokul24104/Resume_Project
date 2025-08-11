@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FaFileUpload, FaClipboardList, FaSpinner, FaCheckCircle } from "react-icons/fa";
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+
 export default function BulkUpload() {
   const [jdInputType, setJdInputType] = useState("text");
   const [jdText, setJdText] = useState("");
@@ -43,7 +45,7 @@ export default function BulkUpload() {
         : formData.append("jd_text", jdText);
       resumeFiles.forEach((file) => formData.append("resumes", file));
 
-      const response = await fetch("http://localhost:5000/upload_bulk", {
+      const response = await fetch(`${BASE_URL}/upload_bulk`, {
         method: "POST",
         body: formData,
         credentials: 'include'
@@ -72,8 +74,6 @@ export default function BulkUpload() {
   console.log("Results for table:", results);
 
   return (
-
-
     <div className="container my-5" style={{ maxWidth: "850px" }}>
       <div className="text-center mb-5">
         <h1 className="display-5 fw-bold">
@@ -84,8 +84,6 @@ export default function BulkUpload() {
           Upload multiple resumes and a job description to screen and rank candidates based on skill match.
         </p>
       </div>
-
-
       <div className="row g-4 mb-4">
         <div className="col-md-6">
           <div className="card p-3 h-100 shadow border-primary">
@@ -188,15 +186,12 @@ export default function BulkUpload() {
             <FaCheckCircle className="me-2" />
             Screening Results
           </h4>
-
-
-
           {results.length > 0 && (
             <div className="mt-4 text-end">
               <button
                 className="btn btn-outline-success ms-2"
                 onClick={async () => {
-                  const response = await fetch("http://localhost:5000/download_report", {
+                  const response = await fetch(`${BASE_URL}/download_report`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ results }),
@@ -212,12 +207,10 @@ export default function BulkUpload() {
               >
                 Download Summary PDF
               </button>
-
-
               <button
                 className="btn btn-outline-success ms-2"
                 onClick={async () => {
-                  const response = await fetch("http://localhost:5000/download_report_excel", {
+                  const response = await fetch(`${BASE_URL}/download_report_excel`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ results }),
@@ -274,10 +267,8 @@ export default function BulkUpload() {
                   </tr>
                 ))}
               </tbody>
-
             </table>
           </div>
-
         </div>
       )}
 
