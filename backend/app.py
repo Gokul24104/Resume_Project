@@ -43,7 +43,7 @@ app.config.update(
 app.config['MYSQL_HOST'] = '34.14.207.105'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'Sanjay@123'
-app.config['MYSQL_DB'] = 'resume-project-db'
+app.config['MYSQL_DB'] = 'resume-screener-db'
 app.config['MYSQL_PORT'] = 3306
 
 mysql = MySQL(app)
