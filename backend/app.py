@@ -1,10 +1,8 @@
-import os
+import os 
 import json
 from flask_mysqldb import MySQL
-from flask import Flask, request, jsonify, session
-from flask import send_from_directory, send_file, request
+from flask import Flask, request, jsonify, session, send_from_directory, send_file
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -30,22 +28,23 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'supersecretkey')
 
-# Enable CORS for React frontend
-from flask_cors import CORS
+# ✅ CORS setup: Allow only your Vercel frontend
+CORS(app, supports_credentials=True, origins=[
+    "https://resume-project-red-gamma.vercel.app"
+])
 
-CORS(app, supports_credentials=True, origins="*")
-
-
+# ✅ Session cookies setup for cross-site HTTPS
 app.config.update(
-    SESSION_COOKIE_SAMESITE='Lax',  # or 'None' with secure=True if using https
-    SESSION_COOKIE_SECURE=False,    # True if HTTPS, False for localhost HTTP
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_SECURE=True
 )
 
-# MySQL configurations
-app.config['MYSQL_HOST'] = 'localhost'
+# MySQL connection (Cloud SQL)
+app.config['MYSQL_HOST'] = '34.14.207.105'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'resumeDB'
+app.config['MYSQL_PASSWORD'] = 'Sanjay@123'
+app.config['MYSQL_DB'] = 'resume-project-db'
+app.config['MYSQL_PORT'] = 3306
 
 mysql = MySQL(app)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -53,7 +52,6 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
     raise ValueError("OPENAI_API_KEY environment variable not set.")
-
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -82,15 +80,16 @@ def register():
             mysql.connection.rollback()
         return jsonify({'error': 'Email or username already exists'}), 409
 
-    except Exception:
+    except Exception as e:
         if cursor:
             mysql.connection.rollback()
-        return jsonify({'error': 'Internal server error'}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
     finally:
         if cursor:
             cursor.close()
-
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -110,12 +109,10 @@ def login():
 
     return jsonify({'error': 'Invalid email or password'}), 401
 
-
 @app.route('/api/logout', methods=['POST'])
 def logout():
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
-
 
 @app.route('/')
 def home():
@@ -148,9 +145,7 @@ def upload_resume():
             return jsonify({'error': 'No job description provided'}), 400
 
         match_score, resume_skills, jd_skills = calculate_similarity(resume_text, jd_text)
-
         missing_skills = [skill for skill in jd_skills if skill not in resume_skills]
-
         learning_suggestions = suggest_learning_resources(missing_skills)
 
         cursor = mysql.connection.cursor()
@@ -190,10 +185,8 @@ def upload_resume():
 
     except Exception as e:
         import traceback
-        traceback.print_exc()  # Prints full stack trace in console
+        traceback.print_exc()
         return jsonify({'error': 'Upload failed: ' + str(e)}), 500
-
-
 
 @app.route('/upload_bulk', methods=['POST'])
 def upload_bulk_resumes():
@@ -220,7 +213,7 @@ def upload_bulk_resumes():
 
     cursor.execute(
         "INSERT INTO job_descriptions (user_id, filename, jd_skills) VALUES (%s, %s, %s)",
-        (session.get('user_id'), 'bulk_jd_upload', json.dumps(jd_skills))
+        (user_id, 'bulk_jd_upload', json.dumps(jd_skills))
     )
     jd_id = cursor.lastrowid
 
@@ -237,7 +230,7 @@ def upload_bulk_resumes():
 
         cursor.execute(
             "INSERT INTO resumes (user_id, file_name, resume_skills) VALUES (%s, %s, %s)",
-            (session.get('user_id'), filename, json.dumps(resume_skills))
+            (user_id, filename, json.dumps(resume_skills))
         )
         resume_id = cursor.lastrowid
 
@@ -262,12 +255,9 @@ def upload_bulk_resumes():
         'results': results_sorted
     }), 200
 
-
-
 @app.route('/uploads/<path:filename>')
 def download_resume(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
-
 
 @app.route('/download_report', methods=['POST'])
 def download_report():
@@ -279,16 +269,13 @@ def download_report():
     elements = []
     styles = getSampleStyleSheet()
 
-    # Title
     elements.append(Paragraph("Resume Screening Report", styles['Title']))
     elements.append(Spacer(1, 12))
 
-    # Table data
     table_data = [["Resume", "Match Score (%)"]]
     for res in results:
         table_data.append([res['filename'], f"{res['match_score']}"])
 
-    # Create table
     t = Table(table_data, hAlign='LEFT')
     t.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.lightblue),
@@ -304,8 +291,6 @@ def download_report():
     doc.build(elements)
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name="resume_report.pdf", mimetype='application/pdf')
-
-
 
 @app.route('/download_report_excel', methods=['POST'])
 def download_report_excel():
@@ -326,8 +311,6 @@ def download_report_excel():
     output.seek(0)
     return send_file(output, as_attachment=True, download_name="resume_report.xlsx", mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
-
-
 @app.route('/enhance_resume', methods=['POST'])
 def enhance_resume():
     data = request.get_json()
@@ -340,15 +323,12 @@ def enhance_resume():
     enhanced_feedback = enhance_with_openai(resume_text, job_descriptions)
     return jsonify({"enhanced_feedback": enhanced_feedback})
 
-
 @app.route('/test_ner', methods=['POST'])
 def test_ner():
     data = request.get_json()
     text = data.get('text', '')
     skills = extract_skills_ner(text)
     return jsonify({'extracted_skills': skills})
-
-
 
 @app.route('/api/check_session', methods=['GET'])
 def check_session():
@@ -358,7 +338,6 @@ def check_session():
         return jsonify({"logged_in": True, "user_id": user_id, "username": username})
     else:
         return jsonify({"logged_in": False, "user_id": None}), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
