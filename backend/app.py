@@ -26,10 +26,10 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'supersecretkey')
 
 # ✅ CORS setup: Allow only your Vercel frontend
-CORS(app, supports_credentials=True, origins=[
-    "https://resume-project-git-master-gokuls-projects-887a247b.vercel.app",
-    "https://resume-project-ge0n09tka-gokuls-projects-887a247b.vercel.app"
-])
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",
+    "https://resume-project-git-master-gokuls-projects-887a247b.vercel.app"
+]}})
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
