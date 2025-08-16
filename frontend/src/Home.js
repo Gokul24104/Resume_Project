@@ -1,7 +1,10 @@
 import React from 'react';
+import Navbar from './components/Navbar'; 
 
 export default function Home() {
   return (
+    <>
+    <Navbar />
     <div>
       {/* Hero Section */}
       <section
@@ -65,5 +68,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }
