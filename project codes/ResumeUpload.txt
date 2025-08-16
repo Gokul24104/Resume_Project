@@ -36,10 +36,10 @@ function ResumeUpload() {
         }
 
         try {
-            const res = await axios.post("http://localhost:5000/upload", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-                withCredentials: true,  // ensures cookies sent
-            });
+            const res = await axios.post(`${BASE_URL}/upload`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
+});
 
             setResponse(res.data);
             setError(null);
@@ -62,15 +62,15 @@ function ResumeUpload() {
         setLoading(true);
         try {
             const res = await axios.post(
-                "http://localhost:5000/enhance_resume",
-                {
-                    resume_text: response.resume_text,
-                    job_description: jdInputMethod === "file" ? "" : jobDescription,
-                },
-                {
-                    withCredentials: true,  // ensures cookies sent here too
-                }
-            );
+    `${BASE_URL}/enhance_resume`,
+    {
+        resume_text: response.resume_text,
+        job_description: jdInputMethod === "file" ? "" : jobDescription,
+    },
+    {
+        withCredentials: true,
+    }
+);
             setEnhancement(res.data.enhanced_feedback);
             setError(null);
         } catch (err) {

@@ -44,8 +44,8 @@ export default function BulkUpload() {
         : formData.append("jd_text", jdText);
       resumeFiles.forEach((file) => formData.append("resumes", file));
 
-      const response = await fetch("http://localhost:5000/upload_bulk", {
-        method: "POST",
+const response = await fetch(`${BASE_URL}/upload_bulk`, {
+    method: 'POST',        method: "POST",
         body: formData,
         credentials: 'include'
       });

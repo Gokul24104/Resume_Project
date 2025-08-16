@@ -7,8 +7,7 @@ function LogoutPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.post('http://localhost:5000/logout', {}, { withCredentials: true })
-      .then(() => {
+    axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
         navigate('/');
       })
       .catch((err) => {

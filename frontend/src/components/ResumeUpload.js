@@ -1,3 +1,5 @@
+import Navbar from "./Navbar";
+
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -10,8 +12,7 @@ import {
   FaLightbulb,
 } from "react-icons/fa";
 
-const BASE_URL = "https://resume-project-i2f8.onrender.com"; // Replace with your deployed backend URL
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 function ResumeUpload() {
   const [file, setFile] = useState(null);
   const [jdInputMethod, setJdInputMethod] = useState("text");
@@ -39,7 +40,7 @@ function ResumeUpload() {
     try {
       const res = await axios.post(`${BASE_URL}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true, // ensures cookies sent
+        withCredentials: true,
       });
 
       setResponse(res.data);
@@ -90,6 +91,9 @@ function ResumeUpload() {
       : "bg-danger";
 
   return (
+          <>
+  <Navbar />
+  <div className="container mt-5"> 
     <div className="container my-5" style={{ maxWidth: "850px" }}>
       <div className="text-center mb-5">
         <h1 className="display-5 fw-bold">AI Resume Screener</h1>
@@ -147,6 +151,8 @@ function ResumeUpload() {
           </div>
         </div>
       </div>
+
+
 
       {jdInputMethod === "text" && (
         <div className="mb-4">
@@ -286,6 +292,8 @@ function ResumeUpload() {
         &copy; {new Date().getFullYear()} Smart Resume Screener · Built with ❤️ using React & Flask
       </footer>
     </div>
+     </div>
+</>
   );
 }
 

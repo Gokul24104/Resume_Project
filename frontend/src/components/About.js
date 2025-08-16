@@ -1,8 +1,11 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import Navbar from "./Navbar";
 
 const About = () => {
   return (
+    <>
+    <Navbar />
     <Container className="my-5">
       <h1 className="mb-4 text-center">About Smart Resume Screener</h1>
       <Row className="g-4">
@@ -36,6 +39,7 @@ const About = () => {
         </Col>
       </Row>
     </Container>
+    </>
   );
 };
 

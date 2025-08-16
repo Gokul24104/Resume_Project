@@ -12,8 +12,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
+const response = await fetch(`${BASE_URL}/api/login`, {        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
         credentials: 'include'
@@ -23,7 +22,7 @@ export default function Login() {
 
       if (response.ok) {
         // 🔍 Immediately verify session
-        const sessionCheck = await fetch('http://localhost:5000/api/check_session', {
+        const sessionCheck = await fetch(`${BASE_URL}/api/check_session`, {
           method: 'GET',
           credentials: 'include'
         });
