@@ -2,17 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://your-render-backend.onrender.com/$1"
+      "destination": "https://resume-project-i2f8.onrender.com/$1"
+                      
     }
   ],
-  "redirects": [],
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "ignore": [
-    "manifest.json",
-    "favicon.ico",
-    "robots.txt",
-    "logo192.png",
-    "logo512.png"
-  ]
+  "static": {
+    "public": true
+  }
 }
