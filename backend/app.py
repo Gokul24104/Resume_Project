@@ -28,6 +28,7 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'supersecretkey')
 # ✅ CORS setup: Allow only your Vercel frontend
 CORS(app, supports_credentials=True, origins=[
     "http://localhost:3000",
+    "https://resume-project-red-gamma.vercel.app"
 ])
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
