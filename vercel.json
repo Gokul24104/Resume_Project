@@ -1,12 +1,18 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "https://your-render-backend.onrender.com/$1"
+    }
   ],
-  "staticFiles": {
-    "manifest.json": true,
-    "favicon.ico": true,
-    "logo192.png": true,
-    "logo512.png": true,
-    "robots.txt": true
-  }
+  "redirects": [],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "ignore": [
+    "manifest.json",
+    "favicon.ico",
+    "robots.txt",
+    "logo192.png",
+    "logo512.png"
+  ]
 }
