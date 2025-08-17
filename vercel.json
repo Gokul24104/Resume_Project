@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://resume-project-8lrq.onrender.com/$1"
+    }
+  ]
+}

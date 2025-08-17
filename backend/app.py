@@ -46,12 +46,13 @@ def allowed_file(filename):
 CORS(app, resources={
     r"/*": {
         "origins": [
-            "http://localhost:3000",
-            "https://resume-project-red-gamma.vercel.app"
+            "http://localhost:3000",  # local testing
+            "https://resume-project-dun.vercel.app"  # your production frontend
         ],
         "supports_credentials": True
     }
 })
+
 
 # -----------------------------
 # OpenAI setup
